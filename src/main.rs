@@ -29,7 +29,7 @@ fn solve_part_one(bytes: &[u8]) {
 
 fn parse_packet(position: (&[u8], usize)) -> ParseReturnInfo {
     let (position, base) = PacketBase::from_bytes(position).unwrap();
-    println!("{:?}", base);
+    println!("{:?}", base.version);
 
     let return_info = match base.next_proto {
         4 => parse_literal(position),
