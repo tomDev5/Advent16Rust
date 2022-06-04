@@ -21,7 +21,7 @@ fn parse_while<F: Fn(&ParseReturnInfo) -> bool>(
         let returned = parse_packet(return_info.position);
         return_info.position = returned.position;
         return_info.bits_read += returned.bits_read;
-        return_info.packets_read += returned.packets_read;
+        return_info.packets_read += 1;
     }
     return_info
 }
