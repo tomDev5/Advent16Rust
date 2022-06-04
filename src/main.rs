@@ -23,13 +23,13 @@ pub fn decode_hex(s: &str) -> Result<Vec<u8>, ParseIntError> {
 }
 
 fn solve_part_one(bytes: &[u8]) {
-    let result = parse_packet((bytes, 0));
-    println!("parsed packet: {:?}", result);
+    parse_packet((bytes, 0));
 }
 
 fn parse_packet(position: (&[u8], usize)) -> ParseReturnInfo {
     let (position, base) = PacketBase::from_bytes(position).unwrap();
-    println!("{:?}", base.version);
+
+    // print!("{:?}+", base.version); // to solve part one
 
     let return_info = match base.next_proto {
         4 => parse_literal(position),

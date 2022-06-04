@@ -27,13 +27,11 @@ fn parse_while<F: Fn(&ParseReturnInfo) -> bool>(
 }
 
 pub fn parse_operator(position: (&[u8], usize)) -> ParseReturnInfo {
-    println!("Parsing Operator");
     let bit_len_operator = BitLenOperator::from_bytes(position);
     let packet_count_operator = PacketNumOperator::from_bytes(position);
 
     if let Ok((position, bit_len_operator)) = bit_len_operator {
         let bit_len = bit_len_operator.bits;
-        println!("Length in bits: {}", bit_len);
 
         let return_info = parse_while(position, |return_info: &ParseReturnInfo| {
             return_info.bits_read < bit_len as usize
@@ -45,7 +43,6 @@ pub fn parse_operator(position: (&[u8], usize)) -> ParseReturnInfo {
         }
     } else if let Ok((position, packet_count_operator)) = packet_count_operator {
         let packet_count = packet_count_operator.packets;
-        println!("Number of packets: {}", packet_count);
 
         let return_info = parse_while(position, |return_info: &ParseReturnInfo| {
             return_info.packets_read < packet_count as usize
