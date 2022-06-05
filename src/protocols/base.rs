@@ -5,6 +5,8 @@ use super::{
 };
 use deku::prelude::*;
 
+const BASE_SIZE: usize = 6;
+
 #[derive(Debug, DekuRead)]
 #[deku(
     type = "u8",
@@ -34,8 +36,5 @@ pub fn parse_packet_from_base(position: (&[u8], usize)) -> Result<ParseReturnInf
         PacketType::Operator(operator) => parse_operator(operator, position)?,
     };
 
-    Ok(ParseReturnInfo {
-        bits_read: 6 + return_info.bits_read,
-        ..return_info
-    })
+    Ok(return_info.add_bits(BASE_SIZE))
 }
