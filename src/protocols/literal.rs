@@ -48,7 +48,6 @@ impl Literal {
 
 pub fn parse_literal(position: (&[u8], usize)) -> Result<ParseReturnInfo, DekuError> {
     let (position, literal) = Literal::from_bytes(position)?;
-    println!("Literal: {:?}", literal);
     Ok(ParseReturnInfo {
         position,
         bits_read: literal.content.1,

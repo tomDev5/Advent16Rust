@@ -29,7 +29,6 @@ pub struct PacketBase {
 
 pub fn parse_packet_from_base(position: (&[u8], usize)) -> Result<ParseReturnInfo, DekuError> {
     let (position, base) = PacketBase::from_bytes(position)?;
-    println!("{:?} {:?}", position, base);
     let return_info = match base.packet_type {
         PacketType::Literal => parse_literal(position)?,
         PacketType::Operator(operator) => parse_operator(operator, position)?,

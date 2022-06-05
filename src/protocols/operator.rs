@@ -41,14 +41,12 @@ pub fn parse_operator(
             let condition =
                 move |return_info: &ParseReturnInfo| return_info.bits_read < bits as usize;
 
-            println!("bits: {:?}", bits);
             perform_operator_action(operator, 16, condition, position)
         }
         LengthOperator::PacketNumOperator(packets) => {
             let condition =
                 move |return_info: &ParseReturnInfo| return_info.packets_read < packets as usize;
 
-            println!("packets: {:?}", packets);
             perform_operator_action(operator, 12, condition, position)
         }
     }
