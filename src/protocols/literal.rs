@@ -22,26 +22,33 @@ impl Literal {
         let mut result: u128 = 0;
         let mut index = 0;
         loop {
-            let is_last = rest.get(index);
-            let nibble = rest.get(index + 1..index + 5);
-            if is_last.is_none() || nibble.is_none() {
-                return Err(DekuError::InvalidParam("Not enough data".to_string()));
-            }
+            let is_last = !rest.get(index).ok_or(DekuError::InvalidParam(
+                "Not enough data for is_last".to_owned(),
+            ))?;
+            let nibble = rest
+                .get(index + 1..index + 5)
+                .ok_or(DekuError::InvalidParam(
+                    "Not enough data to nibble".to_owned(),
+                ))?;
 
-            let is_last = !*is_last.unwrap();
-            let nibble = nibble.unwrap();
             result = (result << 4) + nibble.load_be::<u128>();
             index += 5;
             if is_last {
                 break;
             }
         }
-        Ok((rest.get(index..).unwrap(), (result, index)))
+        Ok((
+            rest.get(index..).ok_or(DekuError::InvalidParam(
+                "Not enough data for position".to_owned(),
+            ))?,
+            (result, index),
+        ))
     }
 }
 
 pub fn parse_literal(position: (&[u8], usize)) -> Result<ParseReturnInfo, DekuError> {
     let (position, literal) = Literal::from_bytes(position)?;
+    println!("Literal: {:?}", literal);
     Ok(ParseReturnInfo {
         position,
         bits_read: literal.content.1,

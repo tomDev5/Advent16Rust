@@ -1,4 +1,8 @@
-use super::{literal::parse_literal, operator::parse_operator, return_info::ParseReturnInfo};
+use super::{
+    literal::parse_literal,
+    operator::{parse_operator, Operator},
+    return_info::ParseReturnInfo,
+};
 use deku::prelude::*;
 
 #[derive(Debug, DekuRead)]
@@ -9,14 +13,10 @@ use deku::prelude::*;
     bits = "3"
 )]
 pub enum PacketType {
-    Literal = 4,
-    Sum = 0,
-    Product = 1,
-    Minimum = 2,
-    Maximum = 3,
-    GreaterThan = 5,
-    LessThan = 6,
-    Equal = 7,
+    #[deku(id = "4")]
+    Literal,
+    #[deku(id_pat = "_")]
+    Operator(Operator),
 }
 
 #[derive(Debug, DekuRead)]
@@ -29,10 +29,10 @@ pub struct PacketBase {
 
 pub fn parse_packet_from_base(position: (&[u8], usize)) -> Result<ParseReturnInfo, DekuError> {
     let (position, base) = PacketBase::from_bytes(position)?;
-
+    println!("{:?} {:?}", position, base);
     let return_info = match base.packet_type {
         PacketType::Literal => parse_literal(position)?,
-        operator_code => parse_operator(operator_code, position)?,
+        PacketType::Operator(operator) => parse_operator(operator, position)?,
     };
 
     Ok(ParseReturnInfo {

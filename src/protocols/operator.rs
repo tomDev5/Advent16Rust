@@ -1,9 +1,24 @@
-use super::base::PacketType;
 use crate::{protocols::base::parse_packet_from_base, protocols::return_info::ParseReturnInfo};
-use core::panic;
 use deku::DekuContainerRead;
 use deku::DekuEnumExt;
 use deku::{DekuError, DekuRead};
+
+#[derive(Debug, DekuRead)]
+#[deku(
+    type = "u8",
+    endian = "endian",
+    ctx = "endian: deku::ctx::Endian",
+    bits = "3"
+)]
+pub enum Operator {
+    Sum = 0,
+    Product = 1,
+    Minimum = 2,
+    Maximum = 3,
+    GreaterThan = 5,
+    LessThan = 6,
+    Equal = 7,
+}
 
 #[derive(Debug, DekuRead)]
 #[deku(endian = "big")]
@@ -16,7 +31,7 @@ enum LengthOperator {
 }
 
 pub fn parse_operator(
-    operator: PacketType,
+    operator: Operator,
     position: (&[u8], usize),
 ) -> Result<ParseReturnInfo, DekuError> {
     let (position, length_operator) = LengthOperator::from_bytes(position)?;
@@ -26,32 +41,33 @@ pub fn parse_operator(
             let condition =
                 move |return_info: &ParseReturnInfo| return_info.bits_read < bits as usize;
 
+            println!("bits: {:?}", bits);
             perform_operator_action(operator, 16, condition, position)
         }
         LengthOperator::PacketNumOperator(packets) => {
             let condition =
                 move |return_info: &ParseReturnInfo| return_info.packets_read < packets as usize;
 
+            println!("packets: {:?}", packets);
             perform_operator_action(operator, 12, condition, position)
         }
     }
 }
 
 fn perform_operator_action(
-    operator: PacketType,
+    operator: Operator,
     header_len: usize,
     condition: impl Fn(&ParseReturnInfo) -> bool,
     position: (&[u8], usize),
 ) -> Result<ParseReturnInfo, DekuError> {
     let return_info = match operator {
-        PacketType::Sum => parse_while_calculative(position, i128::checked_add, condition)?,
-        PacketType::Product => parse_while_calculative(position, i128::checked_mul, condition)?,
-        PacketType::Minimum => parse_subpackets(position, i128::min, condition)?,
-        PacketType::Maximum => parse_subpackets(position, i128::max, condition)?,
-        PacketType::GreaterThan => parse_subpackets(position, |lhs, rhs| lhs > rhs, condition)?,
-        PacketType::LessThan => parse_subpackets(position, |lhs, rhs| lhs < rhs, condition)?,
-        PacketType::Equal => parse_subpackets(position, |lhs, rhs| lhs == rhs, condition)?,
-        other => panic!("WTF2: {:?}", other),
+        Operator::Sum => parse_while_calculative(position, i128::checked_add, condition)?,
+        Operator::Product => parse_while_calculative(position, i128::checked_mul, condition)?,
+        Operator::Minimum => parse_subpackets(position, i128::min, condition)?,
+        Operator::Maximum => parse_subpackets(position, i128::max, condition)?,
+        Operator::GreaterThan => parse_subpackets(position, |lhs, rhs| lhs > rhs, condition)?,
+        Operator::LessThan => parse_subpackets(position, |lhs, rhs| lhs < rhs, condition)?,
+        Operator::Equal => parse_subpackets(position, |lhs, rhs| lhs == rhs, condition)?,
     };
 
     Ok(ParseReturnInfo {
@@ -80,7 +96,7 @@ where
             return_info.value = action;
         } else {
             return Err(DekuError::Unexpected(
-                "Unsafe operation returned none".to_string(),
+                "Unsafe operation returned none".to_owned(),
             ));
         }
     }
