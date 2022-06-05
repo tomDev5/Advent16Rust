@@ -10,7 +10,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     for line in lines {
         let data = decode_hex(line.trim())?;
         let result = parse_packet_from_base((data.as_ref(), 0));
-        println!("{:?}", result?.value);
+        println!("{:?}", result?);
     }
 
     Ok(())
