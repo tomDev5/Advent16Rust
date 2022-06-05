@@ -1,7 +1,7 @@
 mod protocols;
 
 use deku::prelude::*;
-use protocols::return_info::ParseReturnInfo;
+use protocols::{base::PacketType, return_info::ParseReturnInfo};
 use std::num::ParseIntError;
 
 use std::fs;
@@ -29,16 +29,15 @@ fn solve_part_one(bytes: &[u8]) {
 fn parse_packet(position: (&[u8], usize)) -> ParseReturnInfo {
     let (position, base) = PacketBase::from_bytes(position).unwrap();
 
-    // print!("{:?}+", base.version); // to solve part one
-
-    let return_info = match base.next_proto {
-        4 => parse_literal(position),
-        _ => parse_operator(position),
+    let return_info = match base.packet_type {
+        PacketType::Literal => parse_literal(position),
+        operator_code => parse_operator(operator_code, position),
     };
 
     ParseReturnInfo {
         position: return_info.position,
         bits_read: 6 + return_info.bits_read,
         packets_read: return_info.packets_read,
+        value: return_info.value,
     }
 }

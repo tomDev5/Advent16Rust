@@ -46,5 +46,6 @@ pub fn parse_literal(position: (&[u8], usize)) -> ParseReturnInfo {
         position,
         bits_read: literal.content.1,
         packets_read: 1,
+        value: literal.content.0 as i128,
     }
 }
