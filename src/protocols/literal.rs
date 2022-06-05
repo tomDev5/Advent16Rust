@@ -2,7 +2,7 @@ use crate::protocols::return_info::ParseReturnInfo;
 use bitvec::{field::BitField, order::Msb0, slice::BitSlice};
 use deku::prelude::*;
 
-#[derive(Debug, PartialEq, DekuRead, Clone)]
+#[derive(Debug, DekuRead)]
 #[deku(endian = "big")]
 pub struct Literal {
     #[deku(reader = "Literal::read(deku::rest)")]

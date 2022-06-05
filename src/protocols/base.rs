@@ -1,7 +1,7 @@
 use super::{literal::parse_literal, operator::parse_operator, return_info::ParseReturnInfo};
 use deku::prelude::*;
 
-#[derive(Debug, PartialEq, DekuRead)]
+#[derive(Debug, DekuRead)]
 #[deku(
     type = "u8",
     endian = "endian",
@@ -19,7 +19,7 @@ pub enum PacketType {
     Equal = 7,
 }
 
-#[derive(Debug, PartialEq, DekuRead)]
+#[derive(Debug, DekuRead)]
 #[deku(endian = "big")]
 pub struct PacketBase {
     #[deku(bits = "3")]
@@ -36,9 +36,7 @@ pub fn parse_packet_from_base(position: (&[u8], usize)) -> Result<ParseReturnInf
     };
 
     Ok(ParseReturnInfo {
-        position: return_info.position,
         bits_read: 6 + return_info.bits_read,
-        packets_read: return_info.packets_read,
-        value: return_info.value,
+        ..return_info
     })
 }

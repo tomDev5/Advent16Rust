@@ -4,12 +4,16 @@ use crate::protocols::base::parse_packet_from_base;
 use std::fs;
 use std::num::ParseIntError;
 
-fn main() {
-    if let Ok(data) = fs::read_to_string("./input/input.txt") {
-        let data = decode_hex(data.trim()).unwrap();
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let lines = fs::read_to_string("./input/input.txt")?;
+    let lines = lines.lines();
+    for line in lines {
+        let data = decode_hex(line.trim())?;
         let result = parse_packet_from_base((data.as_ref(), 0));
-        println!("{:?}", result);
+        println!("{:?}", result?.value);
     }
+
+    Ok(())
 }
 
 pub fn decode_hex(s: &str) -> Result<Vec<u8>, ParseIntError> {

@@ -5,7 +5,7 @@ use deku::DekuContainerRead;
 use deku::DekuEnumExt;
 use deku::{DekuError, DekuRead};
 
-#[derive(Debug, PartialEq, DekuRead)]
+#[derive(Debug, DekuRead)]
 #[deku(endian = "big")]
 #[deku(type = "u16", bits = "1")]
 enum LengthOperator {
@@ -55,10 +55,8 @@ fn perform_operator_action(
     };
 
     Ok(ParseReturnInfo {
-        position: return_info.position,
         bits_read: header_len + return_info.bits_read,
-        packets_read: return_info.packets_read,
-        value: return_info.value,
+        ..return_info
     })
 }
 
