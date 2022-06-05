@@ -27,18 +27,18 @@ pub struct PacketBase {
     pub packet_type: PacketType,
 }
 
-pub fn parse_packet_from_base(position: (&[u8], usize)) -> ParseReturnInfo {
-    let (position, base) = PacketBase::from_bytes(position).unwrap();
+pub fn parse_packet_from_base(position: (&[u8], usize)) -> Result<ParseReturnInfo, DekuError> {
+    let (position, base) = PacketBase::from_bytes(position)?;
 
     let return_info = match base.packet_type {
-        PacketType::Literal => parse_literal(position),
-        operator_code => parse_operator(operator_code, position),
+        PacketType::Literal => parse_literal(position)?,
+        operator_code => parse_operator(operator_code, position)?,
     };
 
-    ParseReturnInfo {
+    Ok(ParseReturnInfo {
         position: return_info.position,
         bits_read: 6 + return_info.bits_read,
         packets_read: return_info.packets_read,
         value: return_info.value,
-    }
+    })
 }

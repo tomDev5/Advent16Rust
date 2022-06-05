@@ -40,12 +40,12 @@ impl Literal {
     }
 }
 
-pub fn parse_literal(position: (&[u8], usize)) -> ParseReturnInfo {
-    let (position, literal) = Literal::from_bytes(position).unwrap();
-    ParseReturnInfo {
+pub fn parse_literal(position: (&[u8], usize)) -> Result<ParseReturnInfo, DekuError> {
+    let (position, literal) = Literal::from_bytes(position)?;
+    Ok(ParseReturnInfo {
         position,
         bits_read: literal.content.1,
         packets_read: 1,
         value: literal.content.0 as i128,
-    }
+    })
 }
