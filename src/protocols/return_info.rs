@@ -13,4 +13,11 @@ impl ParseReturnInfo<'_> {
             ..self
         }
     }
+
+    pub fn reset_packet_count(self) -> Self {
+        ParseReturnInfo {
+            packets_read: 1,
+            ..self
+        }
+    }
 }

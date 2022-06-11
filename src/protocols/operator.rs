@@ -94,5 +94,5 @@ fn parse_subpackets(
         return_info.packets_read += 1;
         return_info.value = action(return_info.value, returned.value);
     }
-    Ok(return_info)
+    Ok(return_info.reset_packet_count())
 }
